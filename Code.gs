@@ -1,23 +1,3 @@
-function testThePost() {
-  var publishedUrl = "https://script.google.com/a/mcpher.com/macros/s/AKfycbxj0-IK2tOT9yC2hq39ZWqdYdoVhncbeE6ErZl082vczoSyaJY/exec";
-  var body = [
-    {f1:"f1a" , f2:"f2a"},
-    {f1:"f1b" , f2:"f2b"}
-  ];
-  
-  var response = UrlFetchApp.fetch (publishedUrl , {
-    contentType:"application/json",
-    method:"POST",
-    payload:JSON.stringify(body),
-    muteHttpExceptions:true
-  });
-  if (response.getResponseCode() !== 200) {
-    throw response.getResponseCode();
-  }
-  
-}
-
-
 function doPost(e){
   // lets get some data from an API
   
@@ -25,7 +5,7 @@ function doPost(e){
   
   var data = JSON.parse(e.postData.contents);
   // either create or use an existing sheet
-  var ss = SpreadsheetApp.openById('1181bwZspoKoP98o4KuzO0S11IsvE59qCwiw4la9kL4o');
+  var ss = SpreadsheetApp.openById('1Vgp6Ola8QBHQf-pLG29rxcrfO56JyhGP1oYLGZoRqZ4');
   var sheet = ss.getSheetByName ("Order_intake") || ss.insertSheet("Order_intake");
   
   
