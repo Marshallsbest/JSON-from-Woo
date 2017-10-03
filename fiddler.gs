@@ -1,8 +1,3 @@
-// This was copied from +Bruce McPhersons Github library brucemcpherson/cUseful 
-// with instruction from his Video series Google Apps Script for beginners http://shop.oreilly.com/product/0636920054115.do 
-
-// ****** This Library is loaded as a library for the sake of expediency only use this as reference or remove the library link! ******* //
-
 /**
 * this is a utility for messing around with 
 * values obtained from setValues method 
@@ -181,6 +176,7 @@ function Fiddler(sheet) {
   self.mapRows = function(func) {
     
     dataOb_ = dataOb_.map(function(row, rowIndex) {
+      var rowLength = Object.keys(row).length;
       var result = (checkAFunc(func) || functions_.mapRows)(row, {
         name: rowIndex,
         data: dataOb_,
@@ -194,11 +190,17 @@ function Fiddler(sheet) {
         row: row
       });
       
-      if (!result || result.length !== row.length) {
+      if (!result || typeof result !== "object") {
+        throw new Error ("you need to return the row object - did you forget?");
+      }
+      
+      if (Object.keys(result).length !== rowLength) {
         throw new Error(
           'you cant change the number of columns in a row during map items'
         );
       }
+      
+      
       return result;
     });
     
@@ -783,7 +785,7 @@ function Fiddler(sheet) {
         if (Object.keys(data[i]).some(function(d) {
           return !e.hasOwnProperty(d);
         })) {
-          throw new Error('unknown columns in row data to insert');
+          throw new Error('unknown columns in row data to insert:' + JSON.stringify(Object.keys(data[i])));
         }
         
       });
