@@ -12,15 +12,15 @@ function testThePost() {
   if (response.getResponseCode() !== 200) {
     throw response.getResponseCode();
   }
-}
+ }
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////  working logic 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function doPost(e){
  var payLoad = e.postData.contents;
- 
-    
+     
    // lets get some data from an API
    var json = JSON.parse(payLoad);
        console.log(json);
@@ -56,20 +56,34 @@ function doPost(e){
   for(i=0;i<json[0].line_items.length; i++){
     var sValue = json[0].line_items[i].sku;
     var qValue = json[0].line_items[i].quantity;
-    console.log(sValue,qValue);
+    
+   console.log(sValue,qValue);
     Object.defineProperty(order,sValue,{
       value: qValue,
       writable: true,
       enumerable: true,
       configurable: true});
+    };
+    
+  for(i=0;i<json[0].meta_data.length; i++){
+  var invoice = json[0].meta_data[i]._wcpdf_invoice_number;
+  var number = json[0].meta_data[i]._wcpdf_invoice_number.value;
+  Object.defineProperty(order,invoice,{
+    value: number,
+      writable: true,
+      enumerable: true,
+      configurable: true});
   };
+   
   console.log(order);
   var sheet =  SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Order_intake');
   var headRow = order[0] || 1;
   var headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
   var nextRow = sheet.getLastRow()+1; // get next row
   var row = []; 
-  // loop through the header columns
+  
+  //// loop through the header columns
+  
   for (i in headers){
     if (headers[i] == "Timestamp"){ // special case if you include a 'Timestamp' column
       row.push(new Date());
