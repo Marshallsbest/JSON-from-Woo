@@ -25,7 +25,8 @@ function doPost(e){
    var json = JSON.parse(payLoad);
        console.log(json);
        console.log("json has been parsed");
- 
+ // var intake = json.getOwnPropertyNames(json);
+   //    console.log(intake);
   var order = {   
    "Customer_ID" : json[0].customer_id,
    "Order Number" : json[0].number,
@@ -51,12 +52,12 @@ function doPost(e){
    "Shipping" : json[0].shipping_total,
    "Total" : json[0].total,
    "TotalTax" : json[0].total_tax,
+   "Invoice" : json[0].meta_data[5]._wcpdf_invoice_number,
   };
   console.log(order);
   for(i=0;i<json[0].line_items.length; i++){
     var sValue = json[0].line_items[i].sku;
     var qValue = json[0].line_items[i].quantity;
-    
    console.log(sValue,qValue);
     Object.defineProperty(order,sValue,{
       value: qValue,
@@ -65,16 +66,7 @@ function doPost(e){
       configurable: true});
     };
     
-  for(i=0;i<json[0].meta_data.length; i++){
-  var invoice = json[0].meta_data[i]._wcpdf_invoice_number;
-  var number = json[0].meta_data[i]._wcpdf_invoice_number.value;
-  Object.defineProperty(order,invoice,{
-    value: number,
-      writable: true,
-      enumerable: true,
-      configurable: true});
-  };
-   
+
   console.log(order);
   var sheet =  SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Order_intake');
   var headRow = order[0] || 1;
@@ -88,16 +80,8 @@ function doPost(e){
     if (headers[i] == "Timestamp"){ // special case if you include a 'Timestamp' column
       row.push(new Date());
     } else{ // else use header name to get data
-      row.push(order[headers[i]]);   
+      row.push(order[headers[i]]||"");   
     };
   };
   sheet.getRange(nextRow, 1, 1, row.length).setValues([row]);
-
- var newEntry = sheet.getActiveRange().getValues();
-  for(i in newEntry){
-  if (newEntry[i] === "undefined"){
-   newEntryp[i].setValue("");
-  };
-  };
-
 };
